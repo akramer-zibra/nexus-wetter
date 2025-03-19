@@ -1,6 +1,7 @@
 import * as htmlparser2 from "htmlparser2"
 import { decode } from "html-entities"
 import memoize from "memoize"
+import haversine from 'haversine-distance'
 
 import { fetchStationList } from "./port"
 
@@ -15,7 +16,7 @@ export interface Station {
     end: string // e.g. 18.03.2025
 }
 
-const buildParser = (result: Station[], place: string, isActive: boolean) => {
+const buildParser = (result: Station[], filter: Function) => {
 
     // Initialize default
     let cursor: {
@@ -60,15 +61,8 @@ const buildParser = (result: Station[], place: string, isActive: boolean) => {
 
             if (tagname === "tr") {
             
-                // Prepare date calculations
-                const endDeStr = data.end.split('.') // e.g. 18.03.2025
-                const endDateTsp: number = Date.parse(`${endDeStr[2]}-${endDeStr[1]}-${endDeStr[0]}`) // e.g. 2025-03-18
-
                 // Check criterias station name and activeness etc.
-                if (
-                    data.name.toLowerCase().indexOf(place.toLowerCase()) >= 0
-                    && (!isActive || (isActive && endDateTsp + (1000 * 60 * 60 * 24) * 2 > Date.now())) // max. 2 days old and only if isActive flag is true
-                ) {
+                if (filter(data)) {
                     result.push({...data}) // Flush extracted data to results
                 }
 
@@ -91,8 +85,19 @@ const memoizedStationsByPlace = memoize(async (place: string, isActive: boolean)
     // collection with results
     const result: Station[] = []
 
+    // Define filter function
+    const filter = (data: Station): boolean => {
+        
+        // Prepare date calculations
+        const endDeStr = data.end.split('.') // e.g. 18.03.2025
+        const endDateTsp: number = Date.parse(`${endDeStr[2]}-${endDeStr[1]}-${endDeStr[0]}`) // e.g. 2025-03-18
+
+        return data.name.toLowerCase().indexOf(place.toLowerCase()) >= 0
+                && (!isActive || (isActive && endDateTsp + (1000 * 60 * 60 * 24) * 2 > Date.now())) // max. 2 days old and only if isActive flag is true)
+    }
+
     // build a custom parser
-    const parser = buildParser(result, place, isActive)
+    const parser = buildParser(result, filter)
 
     // fetch (cached) station list html text
     const htmlStr: string = await fetchStationList()
@@ -104,14 +109,49 @@ const memoizedStationsByPlace = memoize(async (place: string, isActive: boolean)
     return result
 }, { 
     maxAge: 1000 * 60 * 60 * 24, // data may change once every 24h
-    cacheKey: (arguments_) => arguments_[0]+":"+arguments_[1] // simple string concatenation 
+    cacheKey: (arguments_) => arguments_[1]+arguments_[0] // simple string concatenation 
  }) // cache results for 24 hour)
 
 /** 
  * Gives stations relevant to place, only active ones, if flag isActive is true
  */
 export const stationsByPlace = async (place: string, isActive: boolean = true): Promise<Station[]> => {
+    return memoizedStationsByPlace(place, isActive) // Memoize previous results for higher speed
+}
 
-    // Memoize previous results for higher speed
-    return memoizedStationsByPlace(place, isActive);
+/** Retrieve stations by radius */
+const memoizedStationsByLocation = memoize(async (lat: number, lng: number, radius: number): Promise<Station[]> => {
+
+    // collection with results
+    const result: Station[] = []
+
+    // Define filter function
+    const filter = (data: Station): boolean => {
+        
+        // Prepare date calculations
+        const endDeStr = data.end.split('.') // e.g. 18.03.2025
+        const endDateTsp: number = Date.parse(`${endDeStr[2]}-${endDeStr[1]}-${endDeStr[0]}`) // e.g. 2025-03-18
+
+        return haversine([lat, lng], [data.lat, data.lng]) <= radius
+                && endDateTsp + (1000 * 60 * 60 * 24) * 2 > Date.now() // max. 2 days old and only if isActive flag is true)
+    }
+
+    // build a custom parser
+    const parser = buildParser(result, filter)
+
+    // fetch (cached) station list html text
+    const htmlStr: string = await fetchStationList()
+
+    // Write html to parser
+    parser.write(htmlStr)
+    parser.end()
+
+    return result
+}, {
+    maxAge: 1000 * 60 * 60 * 24, // data may change once every 24h
+    cacheKey: (arguments_) => ""+arguments_[0]+":"+arguments_[1]+":"+arguments_[2]
+})
+
+export const stationsByLocation = async (lat: number, lng: number, radius: number): Promise<Station[]> => {
+    return memoizedStationsByLocation(lat, lng, radius)
 }
