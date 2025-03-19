@@ -1,0 +1,20 @@
+{
+  "name": "nexus-open-data",
+  "module": "serve.ts",
+  "type": "module",
+  "devDependencies": {
+    "@types/bun": "latest"
+  },
+  "peerDependencies": {
+    "typescript": "^5.0.0"
+  },
+  "dependencies": {
+    "@elysiajs/swagger": "^1.2.2",
+    "axios": "^1",
+    "axios-cache-interceptor": "^1",
+    "elysia": "^1.2.25",
+    "html-entities": "^2.5.2",
+    "htmlparser2": "^10.0.0",
+    "memoize": "^10.1.0"
+  }
+}
