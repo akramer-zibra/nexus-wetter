@@ -13,6 +13,7 @@
     "axios": "^1",
     "axios-cache-interceptor": "^1",
     "elysia": "^1.2.25",
+    "haversine-distance": "^1.2.3",
     "html-entities": "^2.5.2",
     "htmlparser2": "^10.0.0",
     "memoize": "^10.1.0"
