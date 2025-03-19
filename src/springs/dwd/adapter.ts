@@ -132,7 +132,7 @@ const memoizedStationsByLocation = memoize(async (lat: number, lng: number, radi
         const endDeStr = data.end.split('.') // e.g. 18.03.2025
         const endDateTsp: number = Date.parse(`${endDeStr[2]}-${endDeStr[1]}-${endDeStr[0]}`) // e.g. 2025-03-18
 
-        return haversine([lat, lng], [data.lat, data.lng]) <= radius
+        return haversine([lat, lng], [data.lat, data.lng]) <= radius * 1000 // distance in meters
                 && endDateTsp + (1000 * 60 * 60 * 24) * 2 > Date.now() // max. 2 days old and only if isActive flag is true)
     }
 
