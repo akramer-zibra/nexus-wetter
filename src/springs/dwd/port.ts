@@ -11,16 +11,11 @@ export const fetchStationList = async () => {
                 'Accept-Charset': 'utf-8',
             },
             responseType: 'text',
-            // responseType: 'arraybuffer',
             cache: {
                 ttl: 1000 * 60 * 60 * 24 // 24h . This data refreshes every 24h 
             }
         })
-    // });
     
-    // const decoder = new TextDecoder('UTF-8');
-    // let htmlStr = decoder.decode(res.data)
-
     return res.data
 }
 
