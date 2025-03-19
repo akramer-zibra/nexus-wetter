@@ -1,0 +1,9 @@
+{
+  "version": "1",
+  "name": "nexus-open-data",
+  "type": "collection",
+  "ignore": [
+    "node_modules",
+    ".git"
+  ]
+}
