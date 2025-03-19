@@ -1,11 +1,11 @@
 meta {
-  name: Get Stations
+  name: Get Stations by Place name
   type: http
   seq: 1
 }
 
 get {
-  url: http://localhost:3000/dwd/stations?place=Stuttgart
+  url: http://localhost:3000/dwd/stations-by-place?place=Stuttgart
   body: none
   auth: none
 }
