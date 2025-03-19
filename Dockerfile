@@ -23,12 +23,12 @@ COPY . .
 
 # [optional] tests & build
 ENV NODE_ENV=production
-# RUN bun test
+RUN bun test
 RUN bun build --minify --outfile=serve.js serve.ts
 
 # copy production dependencies and source code into final image
 FROM base AS release
-# COPY --from=install /temp/prod/node_modules node_modules
+# COPY --from=install /temp/prod/node_modules node_modules # Dependencies are already built in serve.js
 COPY --from=prerelease /usr/src/app/serve.js .
 COPY --from=prerelease /usr/src/app/package.json .
 
