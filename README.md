@@ -1,15 +1,19 @@
 # nexus
 
-To install dependencies:
+## Development
 
-```bash
-bun install
-```
+To install dependencies: `bun install` 
 
-To run:
-
-```bash
-bun run serve.ts
-```
+To run: `bun run --watch serve.ts` 
 
 This project was created using `bun init` in bun v1.1.27. [Bun](https://bun.sh) is a fast all-in-one JavaScript runtime.
+
+## Deploy
+
+Build a docker image: `docker build -t nexus-open-data .` 
+
+Run a docker container of this: `docker run --rm -p 3000:3000 nexus-open-data`
+
+## API 
+
+Read swagger API docs: e.g. `localhost:3000/swagger`
