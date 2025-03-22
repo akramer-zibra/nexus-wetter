@@ -30,7 +30,7 @@ export const fetchStationForecasts = async (codes: string[]): Promise<any[]> => 
         'https://dwd.api.proxy.bund.dev/v30/stationOverviewExtended?stationIds='+ids,
         {
             headers: {
-                'accept': 'applicatio/json',
+                'accept': 'application/json',
             },
             cache: {
                 ttl: 1000 * 60 * 60 * 0.5 // 3h . This data refreshes every 3h, so we use a shorter TTL here
