@@ -115,10 +115,6 @@ export const stationsByName = memoize(internalStationsByName, {
     maxAge: 1000 * 60 * 60 * 24, // data may change once every 24h
     cacheKey: (arguments_) => arguments_[1]+arguments_[0] // simple string concatenation 
 })
-//
-// export const stationsByName = async (place: string, isActive: boolean = true): Promise<Station[]> => {
-//     return memoizedStationsByName(place, isActive) // Memoize previous results for higher speed
-// }
 
 /** 
  * Retrieve stations by given geo location and radius 
@@ -160,11 +156,6 @@ export const stationsByLocation = memoize(internalStationsByLocation, {
     cacheKey: (arguments_) => ""+arguments_[0]+":"+arguments_[1]+":"+arguments_[2]
 })
 
-/** Retrieve stations by radius */
-// export const stationsByLocation = async (lat: number, lng: number, radius: number): Promise<Station[]> => {
-//     return memoizedStationsByLocation(lat, lng, radius)
-// }
-
 /* 
  * Retrieve forecast for given stations 
  */
@@ -200,8 +191,3 @@ const internalForecastsForStastions = async (stationCodes: string[]): Promise<Fo
 }
 //
 export const forecastsByStations = memoize(internalForecastsForStastions)
-
-/* Retrieve forecast for given stations */
-// export const forecastsByStations = async (stationCodes: string[]): Promise<ForecastDataRecord> => {
-//     return memoizedForecastsByStations(stationCodes)
-// }
