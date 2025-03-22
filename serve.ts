@@ -1,12 +1,14 @@
 import { Elysia, t } from 'elysia'
 import { swagger } from '@elysiajs/swagger'
+
 import { stationsByPlace, stationsByLocation } from './src/springs/dwd/adapter'
+import { forecast } from './src/springs/dwd/aggregate'
 
 new Elysia()
     .use(swagger())
     .get('/dwd/stations-by-place', ({ query: { place, isActive } }) => {
 
-        // retrieve statetions by place name
+        // retrieve stations by place name
         return stationsByPlace(place, isActive);
 
     }, {
@@ -17,7 +19,7 @@ new Elysia()
     })
     .get('/dwd/stations-by-location', ({ query: { lat, lng, radius, limit } }) => {
 
-        // retrieve statetions by place name
+        // retrieve stations by geolocation
         return stationsByLocation(lat, lng, radius)
                 .then(data => data.slice(0, limit));
 
@@ -29,13 +31,18 @@ new Elysia()
             limit: t.Number({default: 5})
         })
     })
-    .get('dwd/forecast', ({ query: { place } }) => {
-        
-        throw new Error("Not implemented yet")
+    .get('/dwd/forecast', ({ query: { lat, lng, radius, limit } }) => {
+
+        // retrieve forecasts by place name
+        return forecast(lat, lng, radius)
+                .then(data => data.slice(0, limit));
 
     }, {
         query: t.Object({
-            place: t.String(),
+            lat: t.Number(),
+            lng: t.Number(),
+            radius: t.Number({default: 10, description: "in km"}), // 10 km
+            limit: t.Number({default: 5})
         })
     })
     .listen(3000)
