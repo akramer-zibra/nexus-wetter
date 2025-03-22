@@ -8,6 +8,15 @@ export interface Station {
     end: string // e.g. 18.03.2025 // TODO rename to eol or activeness or last contact
 }
 
+export interface StationWithDistance {
+    point: {
+        lat: number,
+        lng: number
+    },
+    distance: number,
+    station: Station
+}
+
 export interface Forecast {
     station: Station,
     forecast: ForecastData
