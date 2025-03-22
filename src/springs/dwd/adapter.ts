@@ -3,18 +3,9 @@ import { decode } from "html-entities"
 import memoize from "memoize"
 import haversine from 'haversine-distance'
 
-import { fetchStationList } from "./port"
+import { type Station, type ForecastData, type ForecastDataRecord } from "./types"
+import { fetchStationForecasts, fetchStationList } from "./port"
 
-
-export interface Station {
-    name: string,
-    id: string,
-    code: string,
-    lat: number,
-    lng: number,
-    altitude: number,
-    end: string // e.g. 18.03.2025
-}
 
 const buildParser = (result: Station[], filter: Function) => {
 
@@ -80,7 +71,7 @@ const buildParser = (result: Station[], filter: Function) => {
 /** 
  * Memoize stations function 
  */
-const memoizedStationsByPlace = memoize(async (place: string, isActive: boolean) => {
+const memoizedStationsByName = memoize(async (place: string, isActive: boolean) => {
 
     // collection with results
     const result: Station[] = []
@@ -115,8 +106,8 @@ const memoizedStationsByPlace = memoize(async (place: string, isActive: boolean)
 /** 
  * Gives stations relevant to place, only active ones, if flag isActive is true
  */
-export const stationsByPlace = async (place: string, isActive: boolean = true): Promise<Station[]> => {
-    return memoizedStationsByPlace(place, isActive) // Memoize previous results for higher speed
+export const stationsByName = async (place: string, isActive: boolean = true): Promise<Station[]> => {
+    return memoizedStationsByName(place, isActive) // Memoize previous results for higher speed
 }
 
 /** Retrieve stations by radius */
@@ -154,4 +145,36 @@ const memoizedStationsByLocation = memoize(async (lat: number, lng: number, radi
 
 export const stationsByLocation = async (lat: number, lng: number, radius: number): Promise<Station[]> => {
     return memoizedStationsByLocation(lat, lng, radius)
+}
+
+/* Retrieve forecast for given stations */
+export const forecastsByStations = async (stationCodes: string[]): Promise<ForecastDataRecord> => {
+
+    // Fetch multiple forecasts at once
+    const data = await fetchStationForecasts(stationCodes); // Use station codes to fetch forecasts
+    const indexes = Object.keys(data);
+
+    // Define result object
+    const forecastDataRecords: ForecastDataRecord = {}
+    
+    // Map retrieved forcast data
+    Object.values(data).forEach((forecastByStastion, idx) => {
+        // Create a new record for each station forecast
+        forecastDataRecords[indexes[idx]] = {
+            days: forecastByStastion.days.map((dayForecast: any) => { 
+                return {
+                    date: dayForecast.dayDate,
+                    temperatureMin: dayForecast.temperatureMin / 10, // Convert to Celcius with one decimal position
+                    temperatureMax: dayForecast.temperatureMax / 10, // Convert to Celcius with one decimal position
+                    precipitation: dayForecast.precipitation,
+                    icon: dayForecast.icon,
+                }
+            }),
+            // steps: null,
+            // warnings: null
+        }
+    })
+
+    // Return mapped data structure
+    return forecastDataRecords
 }
