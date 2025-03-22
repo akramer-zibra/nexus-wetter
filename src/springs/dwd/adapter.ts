@@ -117,9 +117,9 @@ export const stationsByName = memoize(internalStationsByName, {
 })
 
 /** 
- * Retrieve stations by given geo location and radius 
+ * Retrieve stations by given geo location and range 
  */
-const internalStationsByLocation = async (lat: number, lng: number, radius: number): Promise<Station[]> => {
+const internalStationsByLocation = async (lat: number, lng: number, range: number): Promise<Station[]> => {
 
     // collection with results
     const result: Station[] = []
@@ -131,7 +131,7 @@ const internalStationsByLocation = async (lat: number, lng: number, radius: numb
         const endDeStr = data.recency.split('.') // e.g. 18.03.2025
         const endDateTsp: number = Date.parse(`${endDeStr[2]}-${endDeStr[1]}-${endDeStr[0]}`) // e.g. 2025-03-18
 
-        return haversine([lat, lng], [data.lat, data.lng]) <= radius * 1000 // distance in meters
+        return haversine([lat, lng], [data.lat, data.lng]) <= range * 1000 // distance in meters
                 && endDateTsp + (1000 * 60 * 60 * 24) * 2 > Date.now() // max. 2 days old and only if isActive flag is true)
     }
 
@@ -159,10 +159,10 @@ export const stationsByLocation = memoize(internalStationsByLocation, {
 /** 
  * Retrieves stations by location with calculated distance 
  */
-export const internalStationsByLocationWithDistance = async (lat: number, lng: number, radius: number): Promise<StationWithDistance[]> => {
+export const internalStationsByLocationWithDistance = async (lat: number, lng: number, range: number): Promise<StationWithDistance[]> => {
 
     // retrieve relevant station(s) in range
-    const stations = await stationsByLocation(lat, lng, radius)
+    const stations = await stationsByLocation(lat, lng, range)
 
     // Map results to certain result interface
     return stations.map(station => {
@@ -185,7 +185,7 @@ export const stationsByLocationWithDistance = memoize(internalStationsByLocation
 /* 
  * Retrieve forecast for given stations 
  */
-const internalForecastsForStastions = async (stationCodes: string[]): Promise<ForecastDataRecord> => {
+const internalForecastsForStations = async (stationCodes: string[]): Promise<ForecastDataRecord> => {
 
     // Fetch multiple forecasts at once
     const data = await fetchStationForecasts(stationCodes); // Use station codes to fetch forecasts
@@ -216,4 +216,4 @@ const internalForecastsForStastions = async (stationCodes: string[]): Promise<Fo
     return forecastDataRecords
 }
 //
-export const forecastsByStations = memoize(internalForecastsForStastions)
+export const forecastsByStations = memoize(internalForecastsForStations)
