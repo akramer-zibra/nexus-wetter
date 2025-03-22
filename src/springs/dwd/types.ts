@@ -8,7 +8,7 @@ export interface Station {
     recency: string // e.g. 18.03.2025
 }
 
-export interface Distance {
+export interface StationWithDistance {
     point: {
         lat: number,
         lng: number
