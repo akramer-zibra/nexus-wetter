@@ -1,8 +1,11 @@
 import { Elysia, t } from 'elysia'
 import { swagger } from '@elysiajs/swagger'
 
-import { stationsByName, stationsByLocationWithDistance } from './src/springs/dwd/adapter'
-import { forecast } from './src/springs/dwd/aggregate'
+import { 
+    stationsByName, 
+    stationsByLocationWithDistance,
+    forecast 
+} from './src/springs/dwd'
 
 new Elysia()
     .use(swagger())
