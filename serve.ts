@@ -20,31 +20,31 @@ new Elysia()
             isActive: t.Boolean({default: true}),
         })
     })
-    .get('/dwd/stations-by-location', ({ query: { lat, lng, radius, limit } }) => {
+    .get('/dwd/stations-by-location', ({ query: { lat, lng, range, limit } }) => {
 
         // retrieve stations by geolocation
-        return stationsByLocationWithDistance(lat, lng, radius)
+        return stationsByLocationWithDistance(lat, lng, range)
                 .then(data => data.slice(0, limit));
 
     }, {
         query: t.Object({
             lat: t.Number(),
             lng: t.Number(),
-            radius: t.Number({default: 10, description: "in km"}), // 10 km
+            range: t.Number({default: 10, description: "in km"}), // 10 km
             limit: t.Number({default: 5})
         })
     })
-    .get('/dwd/forecast', ({ query: { lat, lng, radius, limit } }) => {
+    .get('/dwd/forecast', ({ query: { lat, lng, range, limit } }) => {
 
         // retrieve forecasts by place name
-        return forecast(lat, lng, radius)
+        return forecast(lat, lng, range)
                 .then(data => data.slice(0, limit));
 
     }, {
         query: t.Object({
             lat: t.Number(),
             lng: t.Number(),
-            radius: t.Number({default: 10, description: "in km"}), // 10 km
+            range: t.Number({default: 10, description: "in km"}), // 10 km
             limit: t.Number({default: 5})
         })
     })
