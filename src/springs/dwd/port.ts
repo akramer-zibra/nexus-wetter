@@ -33,7 +33,7 @@ export const fetchStationForecasts = async (codes: string[]): Promise<any[]> => 
                 'accept': 'application/json',
             },
             cache: {
-                ttl: 1000 * 60 * 60 * 0.5 // 3h . This data refreshes every 3h, so we use a shorter TTL here
+                ttl: 1000 * 60 * 30 // his data refreshes every 3h, so we use a shorter TTL here
             }
         })
 
