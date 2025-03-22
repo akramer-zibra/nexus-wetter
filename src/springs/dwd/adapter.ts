@@ -68,8 +68,8 @@ const buildParser = (result: Station[], filter: Function) => {
     })
 }
 
-/** 
- * Memoize stations function 
+/**
+ * --------------------------------------
  */
 const memoizedStationsByName = memoize(async (place: string, isActive: boolean) => {
 
@@ -110,7 +110,9 @@ export const stationsByName = async (place: string, isActive: boolean = true): P
     return memoizedStationsByName(place, isActive) // Memoize previous results for higher speed
 }
 
-/** Retrieve stations by radius */
+/**
+ * --------------------------------------
+ */
 const memoizedStationsByLocation = memoize(async (lat: number, lng: number, radius: number): Promise<Station[]> => {
 
     // collection with results
@@ -143,12 +145,15 @@ const memoizedStationsByLocation = memoize(async (lat: number, lng: number, radi
     cacheKey: (arguments_) => ""+arguments_[0]+":"+arguments_[1]+":"+arguments_[2]
 })
 
+/** Retrieve stations by radius */
 export const stationsByLocation = async (lat: number, lng: number, radius: number): Promise<Station[]> => {
     return memoizedStationsByLocation(lat, lng, radius)
 }
 
-/* Retrieve forecast for given stations */
-export const forecastsByStations = async (stationCodes: string[]): Promise<ForecastDataRecord> => {
+/**
+ * --------------------------------------
+ */
+const memoizedForecastsByStations = memoize(async (stationCodes: string[]): Promise<ForecastDataRecord> => {
 
     // Fetch multiple forecasts at once
     const data = await fetchStationForecasts(stationCodes); // Use station codes to fetch forecasts
@@ -177,4 +182,9 @@ export const forecastsByStations = async (stationCodes: string[]): Promise<Forec
 
     // Return mapped data structure
     return forecastDataRecords
+})
+
+/* Retrieve forecast for given stations */
+export const forecastsByStations = async (stationCodes: string[]): Promise<ForecastDataRecord> => {
+    return memoizedForecastsByStations(stationCodes)
 }
