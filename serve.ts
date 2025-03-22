@@ -1,7 +1,7 @@
 import { Elysia, t } from 'elysia'
 import { swagger } from '@elysiajs/swagger'
 
-import { stationsByPlace, stationsByLocation } from './src/springs/dwd/adapter'
+import { stationsByName as stationsByName, stationsByLocation } from './src/springs/dwd/adapter'
 import { forecast } from './src/springs/dwd/aggregate'
 
 new Elysia()
@@ -9,7 +9,7 @@ new Elysia()
     .get('/dwd/stations-by-place', ({ query: { place, isActive } }) => {
 
         // retrieve stations by place name
-        return stationsByPlace(place, isActive);
+        return stationsByName(place, isActive);
 
     }, {
         query: t.Object({
