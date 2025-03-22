@@ -13,6 +13,7 @@ const deToIsoDate = (date: string): string => {
     return formatISO(new Date(parseInt(deStr[2]), parseInt(deStr[1]), parseInt(deStr[0])), { representation: 'date' })
 }
 
+/** Helper function to build a fast  parser which extracts data from html */
 const buildParser = (result: Station[], filter: Function) => {
 
     // Initialize default
@@ -74,10 +75,10 @@ const buildParser = (result: Station[], filter: Function) => {
     })
 }
 
-/**
- * --------------------------------------
+/** 
+ * Gives stations relevant to place, only active ones, if flag isActive is true
  */
-const memoizedStationsByName = memoize(async (place: string, isActive: boolean) => {
+const internalStationsByName = (async (place: string, isActive: boolean): Promise<Station[]> => {
 
     // collection with results
     const result: Station[] = []
@@ -107,22 +108,22 @@ const memoizedStationsByName = memoize(async (place: string, isActive: boolean) 
     result.forEach((station => { station.recency = deToIsoDate(station.recency); }))
 
     return result
-}, { 
+
+})
+//
+export const stationsByName = memoize(internalStationsByName, { 
     maxAge: 1000 * 60 * 60 * 24, // data may change once every 24h
     cacheKey: (arguments_) => arguments_[1]+arguments_[0] // simple string concatenation 
- })
+})
+//
+// export const stationsByName = async (place: string, isActive: boolean = true): Promise<Station[]> => {
+//     return memoizedStationsByName(place, isActive) // Memoize previous results for higher speed
+// }
 
 /** 
- * Gives stations relevant to place, only active ones, if flag isActive is true
+ * Retrieve stations by given geo location and radius 
  */
-export const stationsByName = async (place: string, isActive: boolean = true): Promise<Station[]> => {
-    return memoizedStationsByName(place, isActive) // Memoize previous results for higher speed
-}
-
-/**
- * --------------------------------------
- */
-const memoizedStationsByLocation = memoize(async (lat: number, lng: number, radius: number): Promise<Station[]> => {
+const internalStationsByLocation = async (lat: number, lng: number, radius: number): Promise<Station[]> => {
 
     // collection with results
     const result: Station[] = []
@@ -152,20 +153,22 @@ const memoizedStationsByLocation = memoize(async (lat: number, lng: number, radi
     result.forEach((station => { station.recency = deToIsoDate(station.recency); }))
 
     return result
-}, {
+}
+//
+export const stationsByLocation = memoize(internalStationsByLocation, {
     maxAge: 1000 * 60 * 60 * 24, // data may change once every 24h
     cacheKey: (arguments_) => ""+arguments_[0]+":"+arguments_[1]+":"+arguments_[2]
 })
 
 /** Retrieve stations by radius */
-export const stationsByLocation = async (lat: number, lng: number, radius: number): Promise<Station[]> => {
-    return memoizedStationsByLocation(lat, lng, radius)
-}
+// export const stationsByLocation = async (lat: number, lng: number, radius: number): Promise<Station[]> => {
+//     return memoizedStationsByLocation(lat, lng, radius)
+// }
 
-/**
- * --------------------------------------
+/* 
+ * Retrieve forecast for given stations 
  */
-const memoizedForecastsByStations = memoize(async (stationCodes: string[]): Promise<ForecastDataRecord> => {
+const internalForecastsForStastions = async (stationCodes: string[]): Promise<ForecastDataRecord> => {
 
     // Fetch multiple forecasts at once
     const data = await fetchStationForecasts(stationCodes); // Use station codes to fetch forecasts
@@ -194,9 +197,11 @@ const memoizedForecastsByStations = memoize(async (stationCodes: string[]): Prom
 
     // Return mapped data structure
     return forecastDataRecords
-})
+}
+//
+export const forecastsByStations = memoize(internalForecastsForStastions)
 
 /* Retrieve forecast for given stations */
-export const forecastsByStations = async (stationCodes: string[]): Promise<ForecastDataRecord> => {
-    return memoizedForecastsByStations(stationCodes)
-}
+// export const forecastsByStations = async (stationCodes: string[]): Promise<ForecastDataRecord> => {
+//     return memoizedForecastsByStations(stationCodes)
+// }
