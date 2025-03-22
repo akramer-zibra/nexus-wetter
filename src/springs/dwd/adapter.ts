@@ -4,7 +4,7 @@ import memoize from "memoize"
 import { formatISO } from "date-fns";
 import haversine from 'haversine-distance'
 
-import { type Station, type ForecastData, type ForecastDataRecord } from "./types"
+import { type Station, type ForecastData, type ForecastDataRecord, type StationWithDistance } from "./types"
 import { fetchStationForecasts, fetchStationList } from "./port"
 
 /* Helper function to change date format from de to ISO */
@@ -152,6 +152,32 @@ const internalStationsByLocation = async (lat: number, lng: number, radius: numb
 }
 //
 export const stationsByLocation = memoize(internalStationsByLocation, {
+    maxAge: 1000 * 60 * 60 * 24, // data may change once every 24h
+    cacheKey: (arguments_) => ""+arguments_[0]+":"+arguments_[1]+":"+arguments_[2]
+})
+
+/** 
+ * Retrieves stations by location with calculated distance 
+ */
+export const internalStationsByLocationWithDistance = async (lat: number, lng: number, radius: number): Promise<StationWithDistance[]> => {
+
+    // retrieve relevant station(s) in range
+    const stations = await stationsByLocation(lat, lng, radius)
+
+    // Map results to certain result interface
+    return stations.map(station => {
+        return {
+            point: {
+                lat,
+                lng
+            },
+            distance: haversine([lat, lng], [station.lat, station.lng]) / 1000, // Calculate distance in km 
+            station: station,
+        }
+    })
+}
+//
+export const stationsByLocationWithDistance = memoize(internalStationsByLocationWithDistance, {
     maxAge: 1000 * 60 * 60 * 24, // data may change once every 24h
     cacheKey: (arguments_) => ""+arguments_[0]+":"+arguments_[1]+":"+arguments_[2]
 })

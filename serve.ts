@@ -1,7 +1,7 @@
 import { Elysia, t } from 'elysia'
 import { swagger } from '@elysiajs/swagger'
 
-import { stationsByName as stationsByName, stationsByLocation } from './src/springs/dwd/adapter'
+import { stationsByName, stationsByLocationWithDistance } from './src/springs/dwd/adapter'
 import { forecast } from './src/springs/dwd/aggregate'
 
 new Elysia()
@@ -14,13 +14,13 @@ new Elysia()
     }, {
         query: t.Object({
             place: t.String(),
-            isActive: t.Optional(t.Boolean({default: true})),
+            isActive: t.Boolean({default: true}),
         })
     })
     .get('/dwd/stations-by-location', ({ query: { lat, lng, radius, limit } }) => {
 
         // retrieve stations by geolocation
-        return stationsByLocation(lat, lng, radius)
+        return stationsByLocationWithDistance(lat, lng, radius)
                 .then(data => data.slice(0, limit));
 
     }, {
