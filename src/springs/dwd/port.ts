@@ -20,8 +20,24 @@ export const fetchStationList = async () => {
 }
 
 /** Retrievs forecast data by station codes */
-export const fetchStationForecast = (codes: string[]) => {
+export const fetchStationForecasts = async (codes: string[]): Promise<any[]> => {
 
+    // 
+    const ids = codes.join(',')
+
+    // Fetch json from dwd website 
+    const res = await client().get(
+        'https://dwd.api.proxy.bund.dev/v30/stationOverviewExtended?stationIds='+ids,
+        {
+            headers: {
+                'accept': 'applicatio/json',
+            },
+            cache: {
+                ttl: 1000 * 60 * 60 * 0.5 // 3h . This data refreshes every 3h, so we use a shorter TTL here
+            }
+        })
+
+    return res.data
 //   curl -X 'GET' \
 //   'https://dwd.api.proxy.bund.dev/v30/stationOverviewExtended?stationIds=10739' \
 //   -H 'accept: application/json'
