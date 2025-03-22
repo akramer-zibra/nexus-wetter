@@ -5,10 +5,10 @@ export interface Station {
     lat: number,
     lng: number,
     altitude: number,
-    lastContact: string // e.g. 18.03.2025
+    recency: string // e.g. 18.03.2025
 }
 
-export interface StationWithDistance {
+export interface Distance {
     point: {
         lat: number,
         lng: number
@@ -30,7 +30,7 @@ export interface ForecastData {
         precipitation: number,
         icon: number,
     }[],
-    // steps: [],
+    // hours: [],
     // warnings: any[]
 }
 
