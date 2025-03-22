@@ -1,11 +1,17 @@
 import * as htmlparser2 from "htmlparser2"
 import { decode } from "html-entities"
 import memoize from "memoize"
+import { formatISO } from "date-fns";
 import haversine from 'haversine-distance'
 
 import { type Station, type ForecastData, type ForecastDataRecord } from "./types"
 import { fetchStationForecasts, fetchStationList } from "./port"
 
+/* Helper function to change date format from de to ISO */
+const deToIsoDate = (date: string): string => {
+    const deStr = date.split('.') // e.g. 18.03.2025
+    return formatISO(new Date(parseInt(deStr[2]), parseInt(deStr[1]), parseInt(deStr[0])), { representation: 'date' })
+}
 
 const buildParser = (result: Station[], filter: Function) => {
 
@@ -76,7 +82,7 @@ const memoizedStationsByName = memoize(async (place: string, isActive: boolean) 
     // collection with results
     const result: Station[] = []
 
-    // Define filter function
+    // Define filter function for the data retrieval
     const filter = (data: Station): boolean => {
         
         // Prepare date calculations
@@ -97,13 +103,14 @@ const memoizedStationsByName = memoize(async (place: string, isActive: boolean) 
     parser.write(htmlStr)
     parser.end()
 
-    // TODO do some mapping
+    // Mapping: Normalize german date format to ISO format
+    result.forEach((station => { station.lastContact = deToIsoDate(station.lastContact); }))
 
     return result
 }, { 
     maxAge: 1000 * 60 * 60 * 24, // data may change once every 24h
     cacheKey: (arguments_) => arguments_[1]+arguments_[0] // simple string concatenation 
- }) // cache results for 24 hour)
+ })
 
 /** 
  * Gives stations relevant to place, only active ones, if flag isActive is true
