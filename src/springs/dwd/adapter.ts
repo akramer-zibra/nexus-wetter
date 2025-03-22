@@ -18,7 +18,7 @@ const buildParser = (result: Station[], filter: Function) => {
         column: 0 // Start unknown column
     }
 
-    const defaults: Station = {name: '', id: '', code: '', lat: 0.0, lng: 0.0, altitude: 0, end: ''}
+    const defaults: Station = {name: '', id: '', code: '', lat: 0.0, lng: 0.0, altitude: 0, lastContact: ''}
     let data: Station = {...defaults} // Initialize with defaults
 
     // Define a html parser for station html
@@ -46,7 +46,7 @@ const buildParser = (result: Station[], filter: Function) => {
             if (cursor.column === 5) { data.lat = parseFloat(text.trim()); return; }
             if (cursor.column === 6) { data.lng = parseFloat(text.trim()); return; }
             if (cursor.column === 7) { data.altitude = parseInt(text.trim()); return; }
-            if (cursor.column === 11) { data.end = text.trim(); return; }
+            if (cursor.column === 11) { data.lastContact = text.trim(); return; }
         },
         onclosetag(tagname) {
 
@@ -80,7 +80,7 @@ const memoizedStationsByName = memoize(async (place: string, isActive: boolean) 
     const filter = (data: Station): boolean => {
         
         // Prepare date calculations
-        const endDeStr = data.end.split('.') // e.g. 18.03.2025
+        const endDeStr = data.lastContact.split('.') // e.g. 18.03.2025
         const endDateTsp: number = Date.parse(`${endDeStr[2]}-${endDeStr[1]}-${endDeStr[0]}`) // e.g. 2025-03-18
 
         return data.name.toLowerCase().indexOf(place.toLowerCase()) >= 0
@@ -96,6 +96,8 @@ const memoizedStationsByName = memoize(async (place: string, isActive: boolean) 
     // Write html to parser
     parser.write(htmlStr)
     parser.end()
+
+    // TODO do some mapping
 
     return result
 }, { 
@@ -122,7 +124,7 @@ const memoizedStationsByLocation = memoize(async (lat: number, lng: number, radi
     const filter = (data: Station): boolean => {
         
         // Prepare date calculations
-        const endDeStr = data.end.split('.') // e.g. 18.03.2025
+        const endDeStr = data.lastContact.split('.') // e.g. 18.03.2025
         const endDateTsp: number = Date.parse(`${endDeStr[2]}-${endDeStr[1]}-${endDeStr[0]}`) // e.g. 2025-03-18
 
         return haversine([lat, lng], [data.lat, data.lng]) <= radius * 1000 // distance in meters
@@ -138,6 +140,8 @@ const memoizedStationsByLocation = memoize(async (lat: number, lng: number, radi
     // Write html to parser
     parser.write(htmlStr)
     parser.end()
+
+    // TODO do some mapping
 
     return result
 }, {

@@ -5,7 +5,7 @@ export interface Station {
     lat: number,
     lng: number,
     altitude: number,
-    end: string // e.g. 18.03.2025 // TODO rename to eol or activeness or last contact
+    lastContact: string // e.g. 18.03.2025
 }
 
 export interface StationWithDistance {
