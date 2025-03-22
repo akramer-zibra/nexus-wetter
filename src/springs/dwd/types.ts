@@ -10,7 +10,7 @@ export interface Station {
 
 export interface Forecast {
     station: Station,
-    data: ForecastData
+    forecast: ForecastData
 }
 
 export interface ForecastData {
@@ -20,5 +20,11 @@ export interface ForecastData {
         temperatureMax: number,
         precipitation: number,
         icon: number,
-    }[]
+    }[],
+    // steps: [],
+    // warnings: any[]
+}
+
+export interface ForecastDataRecord {
+    [stationCode: string]: ForecastData
 }
