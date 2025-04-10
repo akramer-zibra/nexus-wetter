@@ -1,6 +1,6 @@
 {
   "version": "1",
-  "name": "nexus-open-data",
+  "name": "nexus-wetter",
   "type": "collection",
   "ignore": [
     "node_modules",
