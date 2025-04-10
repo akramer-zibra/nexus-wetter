@@ -10,9 +10,9 @@ This project was created using `bun init` in bun v1.1.27. [Bun](https://bun.sh) 
 
 ## Deploy
 
-Build a docker image: `docker build -t nexus-open-data .` 
+Build a docker image: `docker build -t nexus-wetter .` 
 
-Run a docker container of this: `docker run --rm -p 3000:3000 nexus-open-data`
+Run a docker container of this: `docker run --rm -p 3000:3000 nexus-wetter`
 
 ## API 
 
