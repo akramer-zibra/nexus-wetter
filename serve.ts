@@ -34,7 +34,7 @@ new Elysia()
             limit: t.Number({default: 5})
         })
     })
-    .get('/dwd/forecast', ({ query: { lat, lng, range, limit } }) => {
+    .get('/dwd/forecast-by-location', ({ query: { lat, lng, range, limit } }) => {
 
         // retrieve forecasts by place name
         return forecast(lat, lng, range)
