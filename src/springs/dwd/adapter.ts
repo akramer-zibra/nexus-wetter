@@ -125,7 +125,7 @@ export const stationsByName = memoize(internalStationsByName, {
 /** 
  * Retrieve stations by given geo location and range 
  */
-const internalStationsByLocation = async (lat: number, lng: number, range: number): Promise<Station[]> => {
+const internalStationsByLocation = async (lat: number, lng: number, range: number, recency?: number): Promise<Station[]> => {
 
     // collection with results
     const result: Station[] = []
@@ -137,8 +137,14 @@ const internalStationsByLocation = async (lat: number, lng: number, range: numbe
         const endDeStr = data.recency.split('.') // e.g. 18.03.2025
         const endDateTsp: number = Date.parse(`${endDeStr[2]}-${endDeStr[1]}-${endDeStr[0]}`) // e.g. 2025-03-18
 
-        return haversine([lat, lng], [data.lat, data.lng]) <= range * 1000 // distance in meters
-                && endDateTsp + (1000 * 60 * 60 * 24) * 2 > Date.now() // max. 2 days old and only if isActive flag is true)
+        // Check if distance matches the range condition
+        const distanceMatches = haversine([lat, lng], [data.lat, data.lng]) <= range * 1000 // distance in meters
+
+        // Check if recency condition matches only if its set
+        const recencyMatches = recency === undefined || 
+            (endDateTsp + (1000 * 60 * 60 * 24) * recency > Date.now())
+
+        return distanceMatches && recencyMatches // Both conditions must be true
     }
 
     // build a custom parser
@@ -159,16 +165,16 @@ const internalStationsByLocation = async (lat: number, lng: number, range: numbe
 //
 export const stationsByLocation = memoize(internalStationsByLocation, {
     maxAge: 1000 * 60 * 60 * 24, // data may change once every 24h
-    cacheKey: (arguments_) => ""+arguments_[0]+":"+arguments_[1]+":"+arguments_[2]
+    cacheKey: (arguments_) => ""+arguments_[0]+":"+arguments_[1]+":"+arguments_[2]+":"+arguments_[3]
 })
 
 /** 
  * Retrieves stations by location with calculated distance 
  */
-export const internalStationsByLocationWithDistance = async (lat: number, lng: number, range: number): Promise<StationWithDistance[]> => {
+export const internalStationsByLocationWithDistance = async (lat: number, lng: number, range: number, recency?: number): Promise<StationWithDistance[]> => {
 
     // retrieve relevant station(s) in range
-    const stations = await stationsByLocation(lat, lng, range)
+    const stations = await stationsByLocation(lat, lng, range, recency)
 
     // Map results to certain result interface
     return stations.map(station => {
@@ -185,7 +191,7 @@ export const internalStationsByLocationWithDistance = async (lat: number, lng: n
 //
 export const stationsByLocationWithDistance = memoize(internalStationsByLocationWithDistance, {
     maxAge: 1000 * 60 * 60 * 24, // data may change once every 24h
-    cacheKey: (arguments_) => ""+arguments_[0]+":"+arguments_[1]+":"+arguments_[2]
+    cacheKey: (arguments_) => ""+arguments_[0]+":"+arguments_[1]+":"+arguments_[2]+":"+arguments_[3]
 })
 
 /* 
