@@ -6,8 +6,10 @@ export const forecast = (lat: number, lng: number, radius: number): Promise<Fore
 
     return new Promise(async (resolve) => {
 
+        const staticRecencyRange = 2 // 2 days
+
         // retrieve relevant station(s)
-        const stations = await stationsByLocation(lat, lng, radius)
+        const stations = await stationsByLocation(lat, lng, radius, staticRecencyRange) // 
 
         // build a temporary index for station objects
         const indexStationsByCode: Record<string, Station> = {}
