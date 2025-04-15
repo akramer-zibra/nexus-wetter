@@ -5,7 +5,7 @@ meta {
 }
 
 get {
-  url: http://localhost:3000/dwd/stations-by-location?lat=48.8281&lng=9.2&radius=25&limit=10
+  url: http://localhost:3000/dwd/stations-by-location?lat=48.8281&lng=9.2&radius=25&recency=2&limit=10
   body: none
   auth: none
 }
@@ -14,5 +14,6 @@ params:query {
   lat: 48.8281
   lng: 9.2
   radius: 25
+  recency: 2
   limit: 10
 }

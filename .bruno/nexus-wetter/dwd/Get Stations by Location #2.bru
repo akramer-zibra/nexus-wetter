@@ -1,0 +1,19 @@
+meta {
+  name: Get Stations by Location #2
+  type: http
+  seq: 4
+}
+
+get {
+  url: http://localhost:3000/dwd/stations-by-location?lat=48.524364&lng=9.054730&radius=25&recency=3&limit=10
+  body: none
+  auth: none
+}
+
+params:query {
+  lat: 48.524364
+  lng: 9.054730
+  radius: 25
+  recency: 3
+  limit: 10
+}

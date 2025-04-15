@@ -5,12 +5,12 @@ meta {
 }
 
 get {
-  url: http://localhost:3000/dwd/stations-by-place?place=Stuttgart
+  url: http://localhost:3000/dwd/stations-by-place?place=Tübingen&recency=3
   body: none
   auth: none
 }
 
 params:query {
-  place: Stuttgart
-  ~isActive: false
+  place: Tübingen
+  recency: 3
 }
