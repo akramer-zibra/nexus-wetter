@@ -78,7 +78,7 @@ const buildParser = (result: Station[], filter: Function) => {
 /** 
  * Gives stations relevant to place with a certain recency of measurements
  */
-const internalStationsByName = (async (place: string, recency?: number): Promise<Station[]> => {
+const internalStationsByName = async (place: string, recency?: number): Promise<Station[]> => {
 
     // collection with results
     const result: Station[] = []
@@ -115,7 +115,7 @@ const internalStationsByName = (async (place: string, recency?: number): Promise
 
     return result
 
-})
+}
 //
 export const stationsByName = memoize(internalStationsByName, { 
     maxAge: 1000 * 60 * 60 * 24, // data may change once every 24h
