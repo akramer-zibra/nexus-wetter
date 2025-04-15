@@ -1,5 +1,5 @@
 import { stationsByLocation, forecastsByStations } from "./adapter"
-import { type Station, type Forecast, type ForecastDataRecord } from "./types"
+import { type Station, type Forecast, type ForecastDataRecord } from "."
 
 /** Gives an aggregat for forecasts if several stations match the selection params */
 export const forecast = (lat: number, lng: number, radius: number): Promise<Forecast[]> => {
