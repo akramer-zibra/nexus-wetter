@@ -76,9 +76,9 @@ const buildParser = (result: Station[], filter: Function) => {
 }
 
 /** 
- * Gives stations relevant to place, only active ones, if flag isActive is true
+ * Gives stations relevant to place with a certain recency of measurements
  */
-const internalStationsByName = (async (place: string, isActive: boolean): Promise<Station[]> => {
+const internalStationsByName = (async (place: string, recency?: number): Promise<Station[]> => {
 
     // collection with results
     const result: Station[] = []
@@ -90,8 +90,14 @@ const internalStationsByName = (async (place: string, isActive: boolean): Promis
         const endDeStr = data.recency.split('.') // e.g. 18.03.2025
         const endDateTsp: number = Date.parse(`${endDeStr[2]}-${endDeStr[1]}-${endDeStr[0]}`) // e.g. 2025-03-18
 
-        return data.name.toLowerCase().indexOf(place.toLowerCase()) >= 0
-                && (!isActive || (isActive && endDateTsp + (1000 * 60 * 60 * 24) * 2 > Date.now())) // max. 2 days old and only if isActive flag is true)
+        // Check if name contains the search term
+        const nameMatches = data.name.toLowerCase().indexOf(place.toLowerCase()) >= 0
+        
+        // Check recency only if it's defined
+        const recencyMatches = recency === undefined || 
+            (endDateTsp + (1000 * 60 * 60 * 24) * recency > Date.now())
+            
+        return nameMatches && recencyMatches // Both conditions must be true
     }
 
     // build a custom parser
@@ -113,7 +119,7 @@ const internalStationsByName = (async (place: string, isActive: boolean): Promis
 //
 export const stationsByName = memoize(internalStationsByName, { 
     maxAge: 1000 * 60 * 60 * 24, // data may change once every 24h
-    cacheKey: (arguments_) => arguments_[1]+arguments_[0] // simple string concatenation 
+    cacheKey: (arguments_) => ""+arguments_[1]+":"+arguments_[0] // simple string concatenation 
 })
 
 /** 

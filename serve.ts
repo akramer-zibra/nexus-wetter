@@ -9,15 +9,15 @@ import {
 
 new Elysia()
     .use(swagger())
-    .get('/dwd/stations-by-place', ({ query: { place, isActive } }) => {
+    .get('/dwd/stations-by-place', ({ query: { place, recency } }) => {
 
         // retrieve stations by place name
-        return stationsByName(place, isActive);
+        return stationsByName(place, recency);
 
     }, {
         query: t.Object({
             place: t.String(),
-            isActive: t.Boolean({default: true}),
+            recency: t.Optional(t.Number({description: "Letzte Messung nicht älter als <recency> Tage"}))
         })
     })
     .get('/dwd/stations-by-location', ({ query: { lat, lng, range, limit } }) => {
