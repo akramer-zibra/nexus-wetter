@@ -20,11 +20,10 @@ new Elysia()
             recency: t.Optional(t.Number({description: "Letzte Messung nicht älter als <recency> Tage"}))
         })
     })
-    .get('/dwd/stations-by-location', ({ query: { lat, lng, range, recency, limit } }) => {
+    .get('/dwd/stations-by-location', ({ query: { lat, lng, range, recency } }) => {
 
         // retrieve stations by geolocation
-        return stationsByLocationWithDistance(lat, lng, range, recency)
-                .then(data => data.slice(0, limit));
+        return stationsByLocationWithDistance(lat, lng, range, recency);
 
     }, {
         query: t.Object({
@@ -32,21 +31,18 @@ new Elysia()
             lng: t.Number(),
             range: t.Number({default: 10, description: "in km"}), // 10 km
             recency: t.Optional(t.Number({description: "Letzte Messung nicht älter als <recency> Tage"})),
-            limit: t.Number({default: 5})
         })
     })
-    .get('/dwd/forecast-by-location', ({ query: { lat, lng, range, limit } }) => {
+    .get('/dwd/forecast-by-location', ({ query: { lat, lng, range} }) => {
 
         // retrieve forecasts by place name
-        return forecast(lat, lng, range)
-                .then(data => data.slice(0, limit));
+        return forecast(lat, lng, range);
 
     }, {
         query: t.Object({
             lat: t.Number(),
             lng: t.Number(),
             range: t.Number({default: 10, description: "in km"}), // 10 km
-            limit: t.Number({default: 5})
         })
     })
     .listen(3000)
