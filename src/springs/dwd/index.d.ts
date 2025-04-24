@@ -27,8 +27,9 @@ export interface ForecastData {
         date: string,
         temperatureMin: number,
         temperatureMax: number,
+        temperatureUnit: string,
         precipitation: number,
-        icon: number,
+        icon: number        
     }[],
     // hours: [],
     // warnings: any[]

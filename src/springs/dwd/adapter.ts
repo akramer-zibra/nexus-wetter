@@ -215,8 +215,9 @@ const internalForecastsForStations = async (stationCodes: string[]): Promise<For
                     date: dayForecast.dayDate,
                     temperatureMin: dayForecast.temperatureMin / 10, // Convert to Celcius with one decimal position
                     temperatureMax: dayForecast.temperatureMax / 10, // Convert to Celcius with one decimal position
+                    temperatureUnit: "°C",
                     precipitation: dayForecast.precipitation,
-                    icon: dayForecast.icon,
+                    icon: dayForecast.icon                    
                 }
             }),
             // steps: null,
