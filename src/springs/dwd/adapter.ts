@@ -4,8 +4,8 @@ import memoize from "memoize"
 import { formatISO } from "date-fns";
 import haversine from 'haversine-distance'
 
-import { type Station, type ForecastData, type ForecastDataRecord, type StationWithDistance } from "."
-import { fetchStationForecasts, fetchStationList } from "./port"
+import { type Station, type ForecastDataRecord, type StationWithDistance } from "."
+import { fetchStationForecasts, fetchStationList } from "./api"
 
 /* Helper function to change date format from de to ISO */
 const deToIsoDate = (date: string): string => {
