@@ -1,0 +1,15 @@
+meta {
+  name: stationsOverviewExtended
+  type: http
+  seq: 1
+}
+
+get {
+  url: https://dwd.api.proxy.bund.dev/v30/stationOverviewExtended?stationIds=10739
+  body: none
+  auth: inherit
+}
+
+params:query {
+  stationIds: 10739
+}
