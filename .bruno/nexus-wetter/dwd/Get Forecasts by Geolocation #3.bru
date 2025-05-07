@@ -1,0 +1,17 @@
+meta {
+  name: Get Forecasts by Geolocation #3
+  type: http
+  seq: 6
+}
+
+get {
+  url: http://localhost:3000/dwd/forecast-by-location?lat=48.675963&lng=9.005462&range=15
+  body: none
+  auth: none
+}
+
+params:query {
+  lat: 48.675963
+  lng: 9.005462
+  range: 15
+}
