@@ -1,6 +1,7 @@
 export interface Station {
     name: string,
     id: string,
+    aspect: string, // e.g. "MN" for automated data
     code: string,
     lat: number,
     lng: number,

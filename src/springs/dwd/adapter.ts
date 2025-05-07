@@ -25,7 +25,7 @@ const buildParser = (result: Station[], filter: Function) => {
         column: 0 // Start unknown column
     }
 
-    const defaults: Station = {name: '', id: '', code: '', lat: 0.0, lng: 0.0, altitude: 0, recency: ''}
+    const defaults: Station = {name: '', id: '', aspect: '', code: '', lat: 0.0, lng: 0.0, altitude: 0, recency: ''}
     let data: Station = {...defaults} // Initialize with defaults
 
     // Define a html parser for station html
@@ -49,6 +49,7 @@ const buildParser = (result: Station[], filter: Function) => {
             // Extract certain data
             if (cursor.column === 1) { data.name = decode(text.trim()); return; }
             if (cursor.column === 2) { data.id = text.trim(); return; }
+            if (cursor.column === 3) { data.aspect = text.trim(); return; }
             if (cursor.column === 4) { data.code = text.trim(); return; }
             if (cursor.column === 5) { data.lat = parseFloat(text.trim()); return; }
             if (cursor.column === 6) { data.lng = parseFloat(text.trim()); return; }
